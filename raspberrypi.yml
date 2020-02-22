@@ -1,0 +1,35 @@
+- hosts: raspberrypi
+  become: true
+
+  tasks:
+
+    - name: "Install samba packages"
+      package:
+        name:
+          - samba
+          - samba-common-bin
+        state: present
+
+    - name: "Ensure samba service is enabled and running"
+      service:
+        name: smbd
+        state: started
+        enabled: yes
+
+    - name: Template a file to /etc/files.conf
+      template:
+        src: samba.conf
+        dest: /etc/samba/smb.conf
+        owner: root
+        group: root
+        mode: '0644'
+        backup: yes
+      notify:
+        - "Restart Samba"
+
+  handlers:
+
+    - name: "Restart Samba"
+      service:
+        name: smbd
+        state: restarted

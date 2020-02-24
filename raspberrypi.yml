@@ -27,6 +27,16 @@
       notify:
         - "Restart Samba"
 
+    # To-Do: need improvement
+    # the storage need to be mounted in a location where samba service and pi user
+    # can edit the content
+    - name: "Enable access to all users to media home"
+      file:
+        path: "/media/pi"
+        owner: pi
+        group: pi
+        mode: '0777'
+
   handlers:
 
     - name: "Restart Samba"

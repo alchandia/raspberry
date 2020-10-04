@@ -16,7 +16,7 @@
         state: started
         enabled: yes
 
-    - name: Template a file to /etc/files.conf
+    - name: "Ensure smb.conf exists"
       template:
         src: samba.conf
         dest: /etc/samba/smb.conf
@@ -37,9 +37,38 @@
         group: pi
         mode: '0777'
 
+    - name: "Ensure hddspindown.sh exists"
+      template:
+        src: hddspindown.sh
+        dest: /sbin/hddspindown.sh
+        owner: root
+        group: root
+        mode: '0755'
+        backup: yes
+
+    - name: "Ensure hddspindown.sh exists"
+      template:
+        src: properpoweroff.service
+        dest: /etc/systemd/system/properpoweroff.service
+        owner: root
+        group: root
+        mode: '0644'
+        backup: yes
+      notify:
+        - "Systemctl properpoweroff reload"
+
+    - name: "Ensure properpoweroff service is enabled and running"
+      service:
+        name: properpoweroff
+        state: started
+        enabled: yes
+
   handlers:
 
     - name: "Restart Samba"
       service:
         name: smbd
         state: restarted
+
+    - name: "Systemctl properpoweroff reload"
+      shell: systemctl daemon-reload
